@@ -6,6 +6,8 @@ class NumberInputValidationStrategy(BaseValidationsStrategy):
 
     @classmethod
     def validate(cls, record, field, **kwargs) -> (object, bool, str):
-        if not isinstance(field, int):
-            return record, False, "Invalid number input, it's not integer"
-        return record, True, "Ok"
+        try:
+            converted_value = int(field)
+            return record, True, "Ok"
+        except ValueError:
+            return record, False, "Invalid number input, it's not an integer"

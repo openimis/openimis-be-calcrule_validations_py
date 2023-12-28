@@ -5,8 +5,8 @@ class BaseValidationsStrategy(ValidationStrategyInterface):
     VALIDATION_CLASS = None
 
     @classmethod
-    def check_calculation(cls, calculation, field_validation_class):
-        return calculation.uuid == field_validation_class.uuid
+    def check_calculation(cls, calculation, calculation_uuid):
+        return calculation.uuid == calculation_uuid
 
     @classmethod
     def calculate(cls, calculation, row_to_validate, field, **kwargs):

@@ -3,7 +3,6 @@ from calcrule_validations.config import CLASS_RULE_PARAM_VALIDATION, DESCRIPTION
 from django.core.exceptions import ValidationError
 from django.contrib.contenttypes.models import ContentType
 
-
 from calcrule_validations.strategies import (
     ValidationStrategyStorage
 )
@@ -53,13 +52,13 @@ class ValidationsCalculationRule(AbsCalculationRule):
         return cls.calculate_if_active_for_object(validation_class, record, field, **kwargs)
 
     @classmethod
-    def calculate_if_active_for_object(cls, validation_class, record, field, **kwargs):
-        if cls.active_for_object(validation_class):
+    def calculate_if_active_for_object(cls, validation_class, calculation_uuid, record, field, **kwargs):
+        if cls.active_for_object(validation_class, calculation_uuid):
             return cls.calculate(validation_class, record, field, **kwargs)
 
     @classmethod
-    def active_for_object(cls, validation_class):
-        return cls.check_calculation(validation_class)
+    def active_for_object(cls, validation_class, calculation_uuid):
+        return cls.check_calculation(validation_class, calculation_uuid)
 
     @classmethod
     def get_linked_class(cls, sender, class_name, **kwargs):
@@ -76,9 +75,9 @@ class ValidationsCalculationRule(AbsCalculationRule):
                 return rule_details["parameters"] if "parameters" in rule_details else []
 
     @classmethod
-    def check_calculation(cls, validation_class, **kwargs):
-        return ValidationStrategyStorage.choose_strategy(validation_class).check_calculation(cls, validation_class)
+    def check_calculation(cls, validation_class, calculation_uuid, **kwargs):
+        return ValidationStrategyStorage.choose_strategy(validation_class).check_calculation(cls, calculation_uuid)
 
     @classmethod
     def calculate(cls, validation_class, record, field, **kwargs):
-        ValidationStrategyStorage.choose_strategy(validation_class).calculate(cls, record, field, **kwargs)
+        return ValidationStrategyStorage.choose_strategy(validation_class).calculate(cls, record, field, **kwargs)

@@ -12,4 +12,4 @@ class PhoneNumberValidationStrategy(BaseValidationsStrategy):
             return record, False, 'Field is not a valid phone number'
         pattern = r"^\+\d{2,3}\d+$"
         is_valid = bool(re.match(pattern, field))
-        return record, is_valid, 'Ok' if is_valid else record, is_valid, 'Field is not a valid phone number'
+        return (record, is_valid, 'Ok') if is_valid else (record, is_valid, 'Field is not a valid phone number')
