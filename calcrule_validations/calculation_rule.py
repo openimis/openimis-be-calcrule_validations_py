@@ -1,25 +1,30 @@
 import uuid
-from calcrule_validations.apps import AbsCalculationRule
 from calcrule_validations.config import CLASS_RULE_PARAM_VALIDATION, DESCRIPTION_CONTRIBUTION_VALUATION, FROM_TO
 from django.core.exceptions import ValidationError
-from gettext import gettext as _
+from django.contrib.contenttypes.models import ContentType
+
+
+from calcrule_validations.strategies import (
+    ValidationStrategyStorage
+)
+from core.abs_calculation_rule import AbsCalculationRule
 from core.signals import *
 from core import datetime
-from django.contrib.contenttypes.models import ContentType
 
 
 class ValidationsCalculationRule(AbsCalculationRule):
     version = 1
     uuid = "4362f958-5894-435b-9bda-df6cadf88352"
-    calculation_rule_name = "calculation_rule_name"
+    calculation_rule_name = "Calculation rule: validations"
     description = DESCRIPTION_CONTRIBUTION_VALUATION
     impacted_class_parameter = CLASS_RULE_PARAM_VALIDATION
     date_valid_from = datetime.datetime(2000, 1, 1)
     date_valid_to = None
     status = "active"
     from_to = FROM_TO
-    type = "type"
-    sub_type = "sub_type"
+    type = "validations"
+    sub_type = "individual"
+    CLASS_NAME_CHECK = ['Individual', 'Beneficiary', 'BenefitPlan']
 
     signal_get_rule_name = Signal(providing_args=[])
     signal_get_rule_details = Signal(providing_args=[])
@@ -44,21 +49,36 @@ class ValidationsCalculationRule(AbsCalculationRule):
                 cls.signal_convert_from_to.connect(cls.run_convert, dispatch_uid="on_convert_from_to")
 
     @classmethod
-    def active_for_object(cls, instance, context, type, sub_type):
-        pass
+    def run_calculation_rules(cls, sender, validation_class, record, field, user, context, **kwargs):
+        return cls.calculate_if_active_for_object(validation_class, record, field, **kwargs)
 
     @classmethod
-    def check_calculation(cls, instance):
-        pass
+    def calculate_if_active_for_object(cls, validation_class, record, field, **kwargs):
+        if cls.active_for_object(validation_class):
+            return cls.calculate(validation_class, record, field, **kwargs)
 
     @classmethod
-    def calculate(cls, instance, **kwargs):
-        pass
+    def active_for_object(cls, validation_class):
+        return cls.check_calculation(validation_class)
 
     @classmethod
     def get_linked_class(cls, sender, class_name, **kwargs):
-        pass
+        return ["Calculation"]
 
     @classmethod
-    def convert(cls, instance, convert_to, **kwargs):
-        pass
+    def get_parameters(cls, sender, class_name, instance, **kwargs):
+        rule_details = cls.get_rule_details(sender=sender, class_name=class_name)
+        if rule_details:
+            if instance.__class__.__name__ in cls.CLASS_NAME_CHECK:
+                if cls.check_calculation(payment_plan=instance):
+                    return rule_details["parameters"] if "parameters" in rule_details else []
+            elif instance.__class__.__name__ == 'ABCMeta' and cls.uuid == str(instance.uuid):
+                return rule_details["parameters"] if "parameters" in rule_details else []
+
+    @classmethod
+    def check_calculation(cls, validation_class, **kwargs):
+        return ValidationStrategyStorage.choose_strategy(validation_class).check_calculation(cls, validation_class)
+
+    @classmethod
+    def calculate(cls, validation_class, record, field, **kwargs):
+        ValidationStrategyStorage.choose_strategy(validation_class).calculate(cls, record, field, **kwargs)
