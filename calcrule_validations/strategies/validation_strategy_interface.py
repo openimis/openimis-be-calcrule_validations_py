@@ -11,5 +11,5 @@ class ValidationStrategyInterface:
         pass
 
     @classmethod
-    def validate(cls, record, field, **kwargs):
+    def validate(cls, record, field_name, field_value, **kwargs):
         pass

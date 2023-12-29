@@ -5,9 +5,9 @@ class NumberInputValidationStrategy(BaseValidationsStrategy):
     VALIDATION_CLASS = "NumberInputValidationStrategy"
 
     @classmethod
-    def validate(cls, record, field, **kwargs) -> (object, bool, str):
+    def validate(cls, record, field_name, field_value, **kwargs) -> (object, bool, str):
         try:
-            converted_value = int(field)
-            return record, True, "Ok"
+            converted_value = int(field_value)
+            return record, True, field_name, "Ok"
         except ValueError:
-            return record, False, "Invalid number input, it's not an integer"
+            return record, False, field_name, "Invalid number input, it's not an integer"
