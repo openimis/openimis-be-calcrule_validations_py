@@ -71,16 +71,6 @@ class ValidationsCalculationRule(AbsCalculationRule):
         return ["Calculation"]
 
     @classmethod
-    def get_parameters(cls, sender, class_name, instance, **kwargs):
-        rule_details = cls.get_rule_details(sender=sender, class_name=class_name)
-        if rule_details:
-            if instance.__class__.__name__ in cls.CLASS_NAME_CHECK:
-                if cls.check_calculation(payment_plan=instance):
-                    return rule_details["parameters"] if "parameters" in rule_details else []
-            elif instance.__class__.__name__ == 'ABCMeta' and cls.uuid == str(instance.uuid):
-                return rule_details["parameters"] if "parameters" in rule_details else []
-
-    @classmethod
     def check_calculation(cls, validation_class, calculation_uuid, **kwargs):
         return ValidationStrategyStorage.choose_strategy(validation_class).check_calculation(cls, calculation_uuid)
 
