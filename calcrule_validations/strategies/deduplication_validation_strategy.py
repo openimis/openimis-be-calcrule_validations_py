@@ -6,22 +6,22 @@ class DeduplicationValidationStrategy(BaseValidationsStrategy):
     VALIDATION_CLASS = "DeduplicationValidationStrategy"
 
     @classmethod
-    def validate(cls, record, field, **kwargs) -> (object, bool, str):
+    def validate(cls, record, field_name, field_value, **kwargs) -> (object, bool, str):
+        benefit_plan = kwargs.get('benefit_plan', None)
         # Query existing beneficiaries where is_deleted=False
-        existing_beneficiaries = Beneficiary.objects.filter(is_deleted=False)
-
+        existing_beneficiaries = Beneficiary.objects.filter(benefit_plan__id=benefit_plan, is_deleted=False)
         # Check if the field value is duplicated among existing beneficiaries
         duplicates = [
             beneficiary.id for beneficiary in existing_beneficiaries
-            if getattr(beneficiary, 'field_name') == field  # Replace 'field_name' with the actual field name
+            if beneficiary.json_ext.get(f'{field_name}') == field_value
         ]
-
         # Flag duplication in json_ext if duplicates are found
         if duplicates:
-            record['json_ext'] = {
+            record = {} if record is None else record
+            record['duplication_notes'] = {
                 'duplicated': True,
                 'duplicated_id': duplicates
             }
-            return record, True, f"Field value '{field}' is duplicated"
+            return record, True, field_name, f"'{field_name}' Field value '{field_value}' is duplicated"
 
-        return record, False, f"Field value '{field}' is not duplicated"
+        return record, False, field_name, f" '{field_name}' Field value '{field_value}' is not duplicated"

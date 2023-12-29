@@ -11,6 +11,6 @@ class BaseValidationsStrategy(ValidationStrategyInterface):
     @classmethod
     def calculate(cls, calculation, row_to_validate, field_name, field_value, **kwargs):
         row_validated = cls.validate(
-            row_to_validate, field_name, field_value
+            row_to_validate, field_name, field_value, **kwargs
         )
         return row_validated
