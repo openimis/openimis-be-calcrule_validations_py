@@ -29,11 +29,11 @@ class DeduplicationValidationStrategy(BaseValidationsStrategy):
 
         # Check for duplication within incoming data
         incoming_duplicates = incoming_data[incoming_data[field_name] == field_value].to_dict('records')
-        incoming_duplicates = [] if len(incoming_duplicates) <= 1 else incoming_duplicates
+        incoming_duplicates = incoming_duplicates[1:]
 
         # Flag duplication if duplicates are found
         duplications = None
-        if duplicates or incoming_duplicates:
+        if duplicates or len(incoming_duplicates) > 0:
             duplications = {
                 'duplicated': True,
                 'duplicates_amoung_database': duplicates,
