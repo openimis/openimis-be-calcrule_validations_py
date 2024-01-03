@@ -9,8 +9,8 @@ class BaseValidationsStrategy(ValidationStrategyInterface):
         return calculation.uuid == calculation_uuid
 
     @classmethod
-    def calculate(cls, calculation, row_to_validate, field_name, field_value, **kwargs):
+    def calculate(cls, calculation, field_name, field_value, **kwargs):
         row_validated = cls.validate(
-            row_to_validate, field_name, field_value, **kwargs
+            field_name, field_value, **kwargs
         )
         return row_validated

@@ -49,18 +49,18 @@ class ValidationsCalculationRule(AbsCalculationRule):
 
     @classmethod
     def run_calculation_rules(
-        cls, sender, validation_class, record,
+        cls, sender, validation_class,
         field_name, field_value, user, context, **kwargs
     ):
-        return cls.calculate_if_active_for_object(validation_class, record, field_name, field_value, **kwargs)
+        return cls.calculate_if_active_for_object(validation_class, field_name, field_value, **kwargs)
 
     @classmethod
     def calculate_if_active_for_object(
         cls, validation_class, calculation_uuid,
-        record, field_name, field_value, **kwargs
+        field_name, field_value, **kwargs
     ):
         if cls.active_for_object(validation_class, calculation_uuid):
-            return cls.calculate(validation_class, record, field_name, field_value, **kwargs)
+            return cls.calculate(validation_class, field_name, field_value, **kwargs)
 
     @classmethod
     def active_for_object(cls, validation_class, calculation_uuid):
@@ -75,6 +75,6 @@ class ValidationsCalculationRule(AbsCalculationRule):
         return ValidationStrategyStorage.choose_strategy(validation_class).check_calculation(cls, calculation_uuid)
 
     @classmethod
-    def calculate(cls, validation_class, record, field_name, field_value, **kwargs):
+    def calculate(cls, validation_class, field_name, field_value, **kwargs):
         return ValidationStrategyStorage.choose_strategy(validation_class)\
-            .calculate(cls, record, field_name, field_value, **kwargs)
+            .calculate(cls, field_name, field_value, **kwargs)

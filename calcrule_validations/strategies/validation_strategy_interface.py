@@ -3,13 +3,13 @@ class ValidationStrategyInterface:
     VALIDATION_OBJECT = None
 
     @classmethod
-    def check_calculation(cls, calculation, field_validation_class):
+    def check_calculation(cls, calculation, calculation_uuid):
         pass
 
     @classmethod
-    def calculate(cls, calculation, benefit_plan, **kwargs):
+    def calculate(cls, calculation, field_name, field_value, **kwargs):
         pass
 
     @classmethod
-    def validate(cls, record, field_name, field_value, **kwargs):
+    def validate(cls, field_name, field_value, **kwargs):
         pass

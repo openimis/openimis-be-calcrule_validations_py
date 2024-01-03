@@ -6,7 +6,7 @@ class DeduplicationValidationStrategy(BaseValidationsStrategy):
     VALIDATION_CLASS = "DeduplicationValidationStrategy"
 
     @classmethod
-    def validate(cls, record, field_name, field_value, **kwargs) -> (object, bool, str):
+    def validate(cls, field_name, field_value, **kwargs) -> (object, bool, str):
         benefit_plan = kwargs.get('benefit_plan', None)
         incoming_data = kwargs.get('incoming_data', None)
         # Query existing beneficiaries where is_deleted=False
@@ -22,13 +22,13 @@ class DeduplicationValidationStrategy(BaseValidationsStrategy):
             if incoming_data else []
 
         # Flag duplication if duplicates are found
+        record = {}
         if duplicates or incoming_duplicates:
-            record = {} if record is None else record
-            record['duplication_notes'] = {
+            record = {
                 'duplicated': True,
                 'duplicated_id': duplicates,
                 'incoming_duplicates': incoming_duplicates
             }
-            return record, True, field_name, f"'{field_name}' Field value '{field_value}' is duplicated"
+            return record, False, field_name, f"'{field_name}' Field value '{field_value}' is duplicated"
 
-        return record, False, field_name, f" '{field_name}' Field value '{field_value}' is not duplicated"
+        return record, True, field_name, f" '{field_name}' Field value '{field_value}' is not duplicated"
