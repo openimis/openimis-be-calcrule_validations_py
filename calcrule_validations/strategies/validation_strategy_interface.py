@@ -1,3 +1,15 @@
+from dataclasses import dataclass
+from typing import Optional, Dict
+
+
+@dataclass
+class ValidationResult:
+    success: bool
+    field_name: str
+    note: str
+    duplications: Optional[Dict] = None
+
+
 class ValidationStrategyInterface:
 
     VALIDATION_OBJECT = None
