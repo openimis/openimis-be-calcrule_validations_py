@@ -1,6 +1,5 @@
 import re
 from dataclasses import asdict
-from django.utils.translation import gettext_lazy as _
 
 from calcrule_validations.strategies.base_strategy import BaseValidationsStrategy
 from calcrule_validations.strategies.validation_strategy_interface import ValidationResult
@@ -15,7 +14,7 @@ class PhoneNumberValidationStrategy(BaseValidationsStrategy):
             return asdict(ValidationResult(
                 success=False,
                 field_name=field_name,
-                note=_("Field is not a valid phone number")
+                note="Field is not a valid phone number"
             ))
         pattern = r"^\+\d{2,3}\d+$"
         is_valid = bool(re.match(pattern, field_value))
@@ -24,5 +23,5 @@ class PhoneNumberValidationStrategy(BaseValidationsStrategy):
             asdict(ValidationResult(
                 success=False,
                 field_name=field_name,
-                note=_("Field is not a valid phone number")
-            ))
+                note="Field is not a valid phone number")
+            )
