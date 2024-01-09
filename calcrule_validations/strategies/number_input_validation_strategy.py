@@ -1,4 +1,5 @@
 from dataclasses import asdict
+from django.utils.translation import gettext_lazy as _
 
 from calcrule_validations.strategies.base_strategy import BaseValidationsStrategy
 from calcrule_validations.strategies.validation_strategy_interface import ValidationResult
@@ -16,5 +17,5 @@ class NumberInputValidationStrategy(BaseValidationsStrategy):
             return asdict(ValidationResult(
                 success=False,
                 field_name=field_name,
-                note="Invalid number input, it's not an integer"
+                note=_("Invalid number input, it's not an integer")
             ))
