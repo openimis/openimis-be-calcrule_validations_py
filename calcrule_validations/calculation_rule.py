@@ -25,12 +25,12 @@ class ValidationsCalculationRule(AbsCalculationRule):
     sub_type = "individual"
     CLASS_NAME_CHECK = ['Individual', 'Beneficiary', 'BenefitPlan']
 
-    signal_get_rule_name = Signal(providing_args=[])
-    signal_get_rule_details = Signal(providing_args=[])
-    signal_get_param = Signal(providing_args=[])
-    signal_get_linked_class = Signal(providing_args=[])
-    signal_calculate_event = Signal(providing_args=[])
-    signal_convert_from_to = Signal(providing_args=[])
+    signal_get_rule_name = Signal([])
+    signal_get_rule_details = Signal([])
+    signal_get_param = Signal([])
+    signal_get_linked_class = Signal([])
+    signal_calculate_event = Signal([])
+    signal_convert_from_to = Signal([])
 
     @classmethod
     def ready(cls):
@@ -50,15 +50,23 @@ class ValidationsCalculationRule(AbsCalculationRule):
     @classmethod
     def run_calculation_rules(
         cls, sender, validation_class,
-        field_name, field_value, user, context, **kwargs
+        user, context, **kwargs
     ):
-        return cls.calculate_if_active_for_object(validation_class, field_name, field_value, **kwargs)
+        field_name = kwargs.pop('field_name')
+        field_value = kwargs.pop('field_value')
+        return cls.calculate_if_active_for_object(
+            validation_class,
+            field_name=field_name,
+            field_value=field_value,
+            **kwargs
+        )
 
     @classmethod
     def calculate_if_active_for_object(
-        cls, validation_class, calculation_uuid,
-        field_name, field_value, **kwargs
+        cls, validation_class, calculation_uuid, **kwargs
     ):
+        field_name = kwargs.pop('field_name')
+        field_value = kwargs.pop('field_value')
         if cls.active_for_object(validation_class, calculation_uuid):
             return cls.calculate(validation_class, field_name, field_value, **kwargs)
 
