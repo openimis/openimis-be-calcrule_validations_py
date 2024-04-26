@@ -19,7 +19,7 @@ class ValidationsCalculationRule(AbsCalculationRule):
     impacted_class_parameter = CLASS_RULE_PARAM_VALIDATION
     date_valid_from = datetime.datetime(2000, 1, 1)
     date_valid_to = None
-    status = "active"
+    status = "pasive"
     from_to = FROM_TO
     type = "validations"
     sub_type = "individual"
