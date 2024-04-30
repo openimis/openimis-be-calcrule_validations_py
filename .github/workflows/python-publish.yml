@@ -30,10 +30,10 @@ jobs:
         
     - name: update setup.py
       run: |    
-        if [ -n "$TAG" ]; then
+        if [ -z "$TAG" ]; then
           export TAG=$GIT_TAG_NAME
         fi
-        echo "tag to use $GIT_TAG_NAME"
+        echo "tag to use $TAG"
         sed -i "s/version='.*'/version='$GIT_TAG_NAME'/g" setup.py
       env:
         TAG: ${{ github.event.inputs.tag }}
