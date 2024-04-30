@@ -6,7 +6,10 @@ name: Upload Python Package
 on:
   release:
     types: [created]
-
+  workflow_dispatch:
+    inputs:
+      tag:
+        required: true
 jobs:
   deploy:
 
@@ -26,9 +29,14 @@ jobs:
         pip install setuptools wheel twine jq
         
     - name: update setup.py
-      run: |
+      run: |    
+        if [ -n "$GIT_TAG_NAME" ]; then
+          export GIT_TAG_NAME=$TAG
+        fi
         echo "tag to use $GIT_TAG_NAME"
         sed -i "s/version='.*'/version='$GIT_TAG_NAME'/g" setup.py
+      env:
+        TAG: ${{ github.event.inputs.tag }}
     - name: Build and publish
       env:
         TWINE_USERNAME: __token__
