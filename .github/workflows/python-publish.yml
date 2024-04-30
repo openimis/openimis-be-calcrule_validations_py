@@ -30,8 +30,8 @@ jobs:
         
     - name: update setup.py
       run: |    
-        if [ -n "$GIT_TAG_NAME" ]; then
-          export GIT_TAG_NAME=$TAG
+        if [ -n "$TAG" ]; then
+          export TAG=$GIT_TAG_NAME
         fi
         echo "tag to use $GIT_TAG_NAME"
         sed -i "s/version='.*'/version='$GIT_TAG_NAME'/g" setup.py
