@@ -23,4 +23,4 @@ class CalcruleValidationsConfig(AppConfig):
     def ready(self):
         from core.models import ModuleConfiguration
         cfg = ModuleConfiguration.get_or_default(MODULE_NAME, DEFAULT_CFG)
-        read_all_calculation_rules()
+        #read_all_calculation_rules()
