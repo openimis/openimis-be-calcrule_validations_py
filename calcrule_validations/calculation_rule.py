@@ -52,8 +52,8 @@ class ValidationsCalculationRule(AbsStrategy):
         cls, sender, instance,
         user, context, **kwargs
     ):
-        field_name = kwargs.pop('field_name')
-        field_value = kwargs.pop('field_value')
+        field_name = kwargs.pop('field_name', None)
+        field_value = kwargs.pop('field_value', None)
         return cls.calculate_if_active_for_object(
             instance,
             field_name=field_name,
@@ -67,8 +67,8 @@ class ValidationsCalculationRule(AbsStrategy):
     ):
         if not calculation_uuid:
             return False
-        field_name = kwargs.pop('field_name')
-        field_value = kwargs.pop('field_value')
+        field_name = kwargs.pop('field_name', None)
+        field_value = kwargs.pop('field_value', None)
         if cls.active_for_object(instance, calculation_uuid):
             return cls.calculate(instance, field_name, field_value, **kwargs)
 
