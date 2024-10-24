@@ -6,12 +6,12 @@ from django.contrib.contenttypes.models import ContentType
 from calcrule_validations.strategies import (
     ValidationStrategyStorage
 )
-from core.abs_calculation_rule import AbsCalculationRule
+from core.abs_calculation_rule import AbsStrategy
 from core.signals import *
 from core import datetime
 
 
-class ValidationsCalculationRule(AbsCalculationRule):
+class ValidationsCalculationRule(AbsStrategy):
     version = 1
     uuid = "4362f958-5894-435b-9bda-df6cadf88352"
     calculation_rule_name = "Calculation rule: validations"
@@ -49,13 +49,13 @@ class ValidationsCalculationRule(AbsCalculationRule):
 
     @classmethod
     def run_calculation_rules(
-        cls, sender, validation_class,
+        cls, sender, instance,
         user, context, **kwargs
     ):
-        field_name = kwargs.pop('field_name')
-        field_value = kwargs.pop('field_value')
+        field_name = kwargs.pop('field_name', None)
+        field_value = kwargs.pop('field_value', None)
         return cls.calculate_if_active_for_object(
-            validation_class,
+            instance,
             field_name=field_name,
             field_value=field_value,
             **kwargs
@@ -63,26 +63,34 @@ class ValidationsCalculationRule(AbsCalculationRule):
 
     @classmethod
     def calculate_if_active_for_object(
-        cls, validation_class, calculation_uuid, **kwargs
+        cls, instance, calculation_uuid=None, **kwargs
     ):
-        field_name = kwargs.pop('field_name')
-        field_value = kwargs.pop('field_value')
-        if cls.active_for_object(validation_class, calculation_uuid):
-            return cls.calculate(validation_class, field_name, field_value, **kwargs)
+        if not calculation_uuid:
+            return False
+        field_name = kwargs.pop('field_name', None)
+        field_value = kwargs.pop('field_value', None)
+        if cls.active_for_object(instance, calculation_uuid):
+            return cls.calculate(instance, field_name, field_value, **kwargs)
 
     @classmethod
-    def active_for_object(cls, validation_class, calculation_uuid):
-        return cls.check_calculation(validation_class, calculation_uuid)
+    def active_for_object(cls, instance, calculation_uuid=None):
+        if not calculation_uuid:
+            return False
+        return cls.check_calculation(instance, calculation_uuid)
 
     @classmethod
     def get_linked_class(cls, sender, class_name, **kwargs):
         return ["Calculation"]
 
     @classmethod
-    def check_calculation(cls, validation_class, calculation_uuid, **kwargs):
-        return ValidationStrategyStorage.choose_strategy(validation_class).check_calculation(cls, calculation_uuid)
+    def check_calculation(cls, instance, calculation_uuid=None, **kwargs):
+        if not calculation_uuid:
+            return False
+        return ValidationStrategyStorage.choose_strategy(instance).check_calculation(cls, calculation_uuid)
 
     @classmethod
-    def calculate(cls, validation_class, field_name, field_value, **kwargs):
-        return ValidationStrategyStorage.choose_strategy(validation_class)\
+    def calculate(cls, instance, field_name=None, field_value=None, **kwargs):
+        if not field_name:
+            return False
+        return ValidationStrategyStorage.choose_strategy(instance)\
             .calculate(cls, field_name, field_value, **kwargs)
