@@ -2,7 +2,7 @@ from dataclasses import asdict
 
 from calcrule_validations.strategies.base_strategy import BaseValidationsStrategy
 from calcrule_validations.strategies.validation_strategy_interface import ValidationResult
-from social_protection.models import Beneficiary
+from beneficiary.models import Beneficiary
 
 
 class DeduplicationValidationStrategy(BaseValidationsStrategy):
