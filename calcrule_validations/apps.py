@@ -15,6 +15,7 @@ def read_all_calculation_rules():
         if cls.__module__.split('.')[1] == 'calculation_rule':
             CALCULATION_RULES.append(cls)
             cls.ready()
+            print(CALCULATION_RULES)
 
 
 class CalcruleValidationsConfig(AppConfig):
